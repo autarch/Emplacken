@@ -81,7 +81,7 @@ sub _build_command_line {
 override _set_uid => sub { };
 override _set_gid => sub { };
 
-sub manages_pid_file { 1 }
+sub manages_pid_file {1}
 
 __PACKAGE__->meta()->make_immutable();
 
