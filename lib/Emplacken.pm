@@ -141,7 +141,7 @@ sub _build_psgi_apps {
     my @files
         = $self->_has_file()
         ? $self->file()
-        : grep { ! $_->is_dir } $self->dir()->children();
+        : grep { !$_->is_dir } $self->dir()->children();
 
     return [
         map { $self->_build_app_from_file($_) }
