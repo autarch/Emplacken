@@ -2,13 +2,12 @@ package Emplacken;
 
 use Moose;
 
-use Emplacken::App;
 use Class::Load qw( is_class_loaded try_load_class );
 use Config::Any;
+use Emplacken::App;
+use Emplacken::Types qw( ArrayRef Bool Dir File );
 use Getopt::Long;
 use List::AllUtils qw( first );
-use MooseX::Types::Moose qw( ArrayRef Bool );
-use MooseX::Types::Path::Class qw( Dir File );
 
 with 'MooseX::Getopt::Dashes';
 
@@ -184,3 +183,5 @@ sub _maybe_print {
 }
 
 1;
+
+#ABSTRACT: Manage multiple plack apps with a directory of config files
