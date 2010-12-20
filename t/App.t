@@ -8,6 +8,7 @@ use Test::More;
 
 use Class::Load qw( try_load_class );
 use Emplacken::App;
+use Emplacken::App::Starman;
 use File::Temp qw( tempdir );
 use Path::Class qw( dir file );
 
@@ -271,6 +272,49 @@ EOF
 
         pl_file_ok( $psgi_file, 'user-supplied template app compiles' );
     }
+}
+
+{
+    my $app = Emplacken::App::Starman->new(
+        file              => $conf_file,
+        psgi_app_file     => $psgi_file,
+        builder           => 'Mojo',
+        app_class         => 'MyApp1',
+        server            => 'Starman',
+        include           => [ '/foo', '/bar' ],
+        modules           => [ 'Mod::X', 'Mod::Y' ],
+        listen            => 'localhost:9876',
+        user              => 'www-data',
+        group             => 'nobody',
+        pid_file          => 'foo.pid',
+        disable_keepalive => 1,
+        workers           => 3,
+        max_requests      => 500,
+        preload_app       => 1,
+        backlog           => 1000,
+    );
+
+    is_deeply(
+        $app->_command_line(),
+        [
+            qw(
+                starman -D
+                --workers 3
+                --disable-keepalive
+                --preload-app
+                --backlog 1000
+                --max-requests 500
+                --user www-data
+                --group nobody
+                --pid foo.pid
+                -I /foo -I /bar
+                -M Mod::X -M Mod::Y
+                --listen localhost:9876
+                ),
+            $psgi_file,
+        ],
+        'command line for app'
+    );
 }
 
 sub _slurp {

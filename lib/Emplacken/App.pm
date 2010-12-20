@@ -55,7 +55,8 @@ has modules => (
 
 has listen => (
     is        => 'ro',
-    isa       => Str,
+    isa       => ArrayRefFromConfig,
+    coerce    => 1,
     predicate => '_has_listen',
 );
 
@@ -189,17 +190,28 @@ sub _build_command_line {
     push @cli, '-S', $self->server()
         unless $self->server() eq 'plackup';
 
-    push @cli, map { ( '-I', $_ ) } @{ $self->include() };
-    push @cli, map { ( '-M', $_ ) } @{ $self->modules() };
-
-    push @cli, '--listen', $self->listen()
-        if $self->_has_listen();
-
-    push @cli, $self->psgi_app_file();
-    $self->_write_psgi_app();
+    push @cli, $self->_common_command_line_options();
 
     return \@cli;
 }
+
+sub _common_command_line_options {
+    my $self = shift;
+
+    return (
+        ( map { ( '-I',       $_ ) } @{ $self->include() } ),
+        ( map { ( '-M',       $_ ) } @{ $self->modules() } ),
+        ( map { ( '--listen', $_ ) } @{ $self->listen() } ),
+        $self->psgi_app_file()
+    );
+}
+
+after _build_command_line => sub {
+    my $self = shift;
+
+    $self->_write_psgi_app();
+};
+
 
 sub _build_psgi_app_file {
     my $self = shift;

@@ -4,14 +4,14 @@ use Moose;
 
 use namespace::autoclean;
 
-use Emplacken::Types qw( Bool Int );
+use Emplacken::Types qw( Bool File Int );
 
 extends 'Emplacken::App';
 
 has pid_file => (
-    is        => 'ro',
-    isa       => File,
-    coerce    => 1,
+    is     => 'ro',
+    isa    => File,
+    coerce => 1,
 );
 
 has workers => (
@@ -26,16 +26,43 @@ has disable_keepalive => (
     default => 0,
 );
 
-override _command_line => sub {
+has preload_app => (
+    is      => 'ro',
+    isa     => Bool,
+    default => 0,
+);
+
+has max_requests => (
+    is        => 'ro',
+    isa       => Int,
+    predicate => '_has_max_requests',
+);
+
+has backlog => (
+    is        => 'ro',
+    isa       => Int,
+    predicate => '_has_backlog',
+);
+
+sub _build_command_line {
     my $self = shift;
 
-    my @cli = super();
+    my @cli = ( 'starman', '-D' );
 
     push @cli, '--workers', $self->workers()
         if $self->_has_workers();
 
     push @cli, '--disable-keepalive'
         if $self->disable_keepalive();
+
+    push @cli, '--preload-app'
+        if $self->preload_app();
+
+    push @cli, '--backlog', $self->backlog()
+        if $self->_has_backlog();
+
+    push @cli, '--max-requests', $self->max_requests()
+        if $self->_has_max_requests();
 
     push @cli, '--user', $self->user()
         if $self->_has_user();
@@ -45,8 +72,10 @@ override _command_line => sub {
 
     push @cli, '--pid', $self->pid_file();
 
-    return @cli;
-};
+    push @cli, $self->_common_command_line_options();
+
+    return \@cli;
+}
 
 # The Starman server handles tihs itself
 override _set_uid => sub { };
