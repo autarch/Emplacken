@@ -74,8 +74,8 @@ use warnings;
 {{$setup}}
 
 builder {
-    {{if (defined $builder_pre) { $builder_pre } }}
-    {{if (defined $mw) { $mw } }}
+    {{ if (defined $builder_pre) { $builder_pre } }}
+    {{ if (defined $mw) { $mw } }}
     {{$app_core}}
 };
 

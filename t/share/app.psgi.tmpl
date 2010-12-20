@@ -9,8 +9,8 @@ use MyApp1;
 my $server = Mojo::Server::PSGI->new( app_class => 'MyApp1' );
 
 builder {
-    {{if (defined $builder_pre) { $builder_pre } }}
-    {{if (defined $mw) { $mw } }}
+    {{ if (defined $builder_pre) { $builder_pre } }}
+    {{ if (defined $mw) { $mw } }}
     sub { $server->run(@_) };
 };
 
