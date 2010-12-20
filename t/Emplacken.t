@@ -82,10 +82,10 @@ my $exit_status;
 {
     like(
         exception {
-            Emplacken->new( dir => file($0)->dir()->subdir( 'conf', 'good' ) )
+            Emplacken->new( dir => file($0)->dir()->subdir( 'conf', 'bad' ) )
                 ->_psgi_apps();
         },
-        qr/asfasf/,
+        qr/\Qbad1.conf does not contain a server key/,
         'error loading a config file without a server key'
     );
 }
