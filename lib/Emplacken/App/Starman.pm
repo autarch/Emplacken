@@ -20,16 +20,10 @@ has workers => (
     predicate => '_has_workers',
 );
 
-has disable_keepalive => (
-    is      => 'ro',
-    isa     => Bool,
-    default => 0,
-);
-
-has preload_app => (
-    is      => 'ro',
-    isa     => Bool,
-    default => 0,
+has backlog => (
+    is        => 'ro',
+    isa       => Int,
+    predicate => '_has_backlog',
 );
 
 has max_requests => (
@@ -38,10 +32,16 @@ has max_requests => (
     predicate => '_has_max_requests',
 );
 
-has backlog => (
-    is        => 'ro',
-    isa       => Int,
-    predicate => '_has_backlog',
+has preload_app => (
+    is      => 'ro',
+    isa     => Bool,
+    default => 0,
+);
+
+has disable_keepalive => (
+    is      => 'ro',
+    isa     => Bool,
+    default => 0,
 );
 
 sub _build_command_line {
