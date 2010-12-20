@@ -96,7 +96,7 @@ sub _psgi_app_code {
 
     push @mw,
         map { sprintf( '    enable %s;', B::perlstring($_) ) }
-            @{ $self->middleware };
+        @{ $self->middleware };
 
     if ( my $mw = $self->_reverse_proxy_code() ) {
         push @mw, $mw;
@@ -104,8 +104,8 @@ sub _psgi_app_code {
 
     if ( my ( $pre, $mw ) = $self->_access_log_code() ) {
         push @modules, 'autodie';
-        push @pre, $pre;
-        push @mw,  $mw;
+        push @pre,     $pre;
+        push @mw,      $mw;
     }
 
     my $builder_pre;
@@ -118,8 +118,8 @@ sub _psgi_app_code {
 
     if ( my ( $pre, $post ) = $self->_pid_file_code() ) {
         push @modules, 'File::Pid';
-        push @pre,  $pre;
-        push @post, $post;
+        push @pre,     $pre;
+        push @post,    $post;
     }
 
     my $use  = join q{}, map {"use $_;\n"} uniq @modules;
@@ -151,9 +151,10 @@ sub _psgi_app_code {
     if ( try_load_class('Perl::Tidy') ) {
         my $tidied;
 
-        Perl::Tidy::perltidy( source => \$code,
-                              destination => \$tidied,
-                            );
+        Perl::Tidy::perltidy(
+            source      => \$code,
+            destination => \$tidied,
+        );
 
         $code = $tidied;
     }
