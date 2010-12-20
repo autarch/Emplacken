@@ -6,6 +6,7 @@ use namespace::autoclean;
 
 use Class::Load qw( try_load_class );
 use Emplacken::Types qw( ArrayRefFromConfig Bool File Str );
+use List::AllUtils qw( uniq );
 use Text::Template;
 
 requires 'psgi_app_code';
@@ -67,9 +68,6 @@ has error_log_format => (
 my $Template = <<'EOF';
 use strict;
 use warnings;
-use autodie;
-
-use Plack::Builder;
 
 {{$modules}}
 {{$pre}}
@@ -86,11 +84,12 @@ EOF
 
 sub _psgi_app_code {
     my $self     = shift;
-    my $modules  = shift;
+    my $mods     = shift;
     my $setup    = shift;
     my $app_core = shift;
     my $template = shift || $Template;
 
+    my @modules = ( 'Plack::Builder', @{$mods} );
     my @pre;
     my @mw;
     my @post;
@@ -104,6 +103,7 @@ sub _psgi_app_code {
     }
 
     if ( my ( $pre, $mw ) = $self->_access_log_code() ) {
+        push @modules, 'autodie';
         push @pre, $pre;
         push @mw,  $mw;
     }
@@ -111,18 +111,18 @@ sub _psgi_app_code {
     my $builder_pre;
 
     if ( my ( $pre, $post ) = $self->_error_log_code() ) {
-        push @{$modules}, 'Emplacken::Stderr';
+        push @modules, 'autodie', 'Emplacken::Stderr';
         push @pre, $pre;
         $builder_pre = 'local $Emplacken::Stderr::Env = $_[0];';
     }
 
     if ( my ( $pre, $post ) = $self->_pid_file_code() ) {
-        push @{$modules}, 'File::Pid';
+        push @modules, 'File::Pid';
         push @pre,  $pre;
         push @post, $post;
     }
 
-    my $use  = join q{}, map {"use $_;\n"} @{$modules};
+    my $use  = join q{}, map {"use $_;\n"} uniq @modules;
     my $pre  = join q{}, map { $_ . "\n" } @pre;
     my $mw   = join q{}, map { $_ . "\n" } @mw;
     my $post = join q{}, map { $_ . "\n" } @post;

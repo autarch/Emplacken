@@ -70,11 +70,10 @@ my $psgi_file = $tempdir->file('app1.psgi');
     my $expect = <<'EOF';
 use strict;
 use warnings;
-use autodie;
 
 use Plack::Builder;
-
 use MyApp1;
+use autodie;
 use Emplacken::Stderr;
 use File::Pid;
 
@@ -132,10 +131,8 @@ EOF
     my $expect = <<'EOF';
 use strict;
 use warnings;
-use autodie;
 
 use Plack::Builder;
-
 use Mojo::Server::PSGI;
 use MyApp1;
 use File::Pid;
@@ -185,10 +182,8 @@ EOF
     my $expect = <<'EOF';
 use strict;
 use warnings;
-use autodie;
 
 use Plack::Builder;
-
 use HTML::Mason::PSGIHandler;
 use File::Pid;
 
@@ -240,12 +235,10 @@ EOF
     my $expect = <<'EOF';
 use strict;
 use warnings;
-use autodie;
-
-use Plack::Builder;
 
 use Mojo::Server::PSGI;
 use MyApp1;
+use Plack::Builder;
 use File::Pid;
 
 my $pid = File::Pid->new( file => "foo.pid" );
