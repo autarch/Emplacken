@@ -89,7 +89,7 @@ has psgi_app_file => (
 
 sub BUILD {
     my $self = shift;
-    my $p     = shift;
+    my $p    = shift;
 
     my $builder = delete $p->{builder}
         or die "Must specify a code builder for the $p->{file} app\n";
@@ -100,7 +100,7 @@ sub BUILD {
     $self->_set_builder( $cb_class->new( %{$p}, app => $self ) );
 
     return $p;
-};
+}
 
 sub _build_name {
     my $self = shift;
@@ -127,7 +127,7 @@ sub start {
     die "Failed to exec @{$cli}: $!";
 }
 
-sub _maybe_drop_privs{
+sub _maybe_drop_privs {
     my $self = shift;
 
     $self->_set_uid();
@@ -212,7 +212,6 @@ after _build_command_line => sub {
     $self->_write_psgi_app();
 };
 
-
 sub _build_psgi_app_file {
     my $self = shift;
 
@@ -229,7 +228,7 @@ sub _write_psgi_app {
     return;
 }
 
-sub manages_pid_file { 0 }
+sub manages_pid_file {0}
 
 __PACKAGE__->meta()->make_immutable();
 
