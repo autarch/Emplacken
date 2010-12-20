@@ -74,7 +74,7 @@ use warnings;
 {{$setup}}
 
 builder {
-    {{if (defined $builder_pre) { $builder_pre . "\n" } }}
+    {{if (defined $builder_pre) { $builder_pre } }}
     {{if (defined $mw) { $mw } }}
     {{$app_core}}
 };
@@ -127,6 +127,7 @@ sub _psgi_app_code {
     my $mw   = join q{}, map { $_ . "\n" } @mw;
     my $post = join q{}, map { $_ . "\n" } @post;
 
+    $builder_pre .= "\n" if defined $builder_pre;
     undef $mw unless length $mw;
 
     my $tt = Text::Template->new(
